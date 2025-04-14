@@ -18,8 +18,11 @@ import {
     styled,
     Snackbar,
     Alert,
+    Paper,
+    IconButton,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import imageCompression from "browser-image-compression";
 import getImage from "../../services/ImageServices/Get";
 import PostImage from "../../services/ImageServices/Post";
@@ -35,6 +38,18 @@ const VisuallyHiddenInput = styled("input")({
     whiteSpace: "nowrap",
     width: 1,
 });
+
+const StyledCard = styled(Card)(({ theme }) => ({
+    width: 345,
+    background: 'rgba(255, 255, 255, 0.8)',
+    backdropFilter: 'blur(10px)',
+    borderRadius: '16px',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+        transform: 'translateY(-8px)',
+        boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
+    }
+}));
 
 const Home = () => {
     const key = import.meta.env.VITE_UPLOAD_KEY;
@@ -87,10 +102,21 @@ const Home = () => {
     const currentImages = images.slice((page - 1) * imagesPerPage, page * imagesPerPage);
 
     return (
-        <Container sx={{ mt: 4 }}>
+        <Container maxWidth="lg" sx={{ 
+            mt: 4,
+            minHeight: '100vh',
+            background: 'white',
+            borderRadius: '24px',
+            padding: '40px 20px'
+        }}>
             <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={password !== key}>
-                <Dialog open={password !== key}>
-                    <DialogTitle>Access Locked</DialogTitle>
+                <Dialog open={password !== key} PaperProps={{ 
+                    style: { 
+                        borderRadius: '16px',
+                        padding: '16px'
+                    }
+                }}>
+                    <DialogTitle sx={{ fontWeight: 600 }}>Access Locked</DialogTitle>
                     <DialogContent>
                         <DialogContentText>Enter the password to access the page.</DialogContentText>
                         <TextField
@@ -102,6 +128,7 @@ const Home = () => {
                             type="password"
                             fullWidth
                             variant="outlined"
+                            sx={{ mt: 2 }}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </DialogContent>
@@ -114,16 +141,43 @@ const Home = () => {
                 </Backdrop>
             )}
 
-            <Typography variant="h4" align="center" gutterBottom>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                <img 
+                    src="https://mediakita.ghavio.my.id/mediakitalogo.png" 
+                    alt="MediaKita Logo"
+                    style={{ 
+                        width: '200px',
+                        height: 'auto',
+                        marginBottom: '20px'
+                    }}
+                />
+            </Box>
+
+            <Typography variant="h3" align="center" gutterBottom sx={{ 
+                fontWeight: 700,
+                background: 'linear-gradient(45deg, #d32f2f 30%, #f44336 90%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+            }}>
                 Media Image Hosting
             </Typography>
 
-            <Box display="flex" justifyContent="center" sx={{ mb: 3 }}>
+            <Box display="flex" justifyContent="center" sx={{ mb: 5 }}>
                 <Button
                     variant="contained"
                     startIcon={<CloudUploadIcon />}
                     component="label"
-                    sx={{ px: 4, py: 1.5 }}
+                    sx={{ 
+                        px: 6, 
+                        py: 2,
+                        borderRadius: '30px',
+                        background: 'linear-gradient(45deg, #d32f2f 30%, #f44336 90%)',
+                        boxShadow: '0 3px 5px 2px rgba(244, 67, 54, .3)',
+                        '&:hover': {
+                            transform: 'scale(1.05)',
+                            transition: 'transform 0.2s ease'
+                        }
+                    }}
                 >
                     Upload Image
                     <VisuallyHiddenInput
@@ -134,55 +188,84 @@ const Home = () => {
                 </Button>
             </Box>
 
-            <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 3 }}>
                 {currentImages.map((item) => (
-                    <Card
-                        key={item.key}
-                        sx={{
-                            width: 345,
-                            transition: "transform 0.3s ease",
-                            "&:hover": { transform: "scale(1.05)" },
-                        }}
-                    >
+                    <StyledCard key={item.key}>
                         <CardMedia
                             component="img"
                             height="200"
-                            image={`https://image-hosting.maulanazulkifar.com/${item.key}`}
+                            image={`https://assets.mediakita.cloud/${item.key}`}
                             alt="Uploaded"
+                            sx={{ borderRadius: '16px 16px 0 0' }}
                         />
-                        <CardContent>
-                            <Typography variant="body2" sx={{ wordWrap: "break-word" }}>
-                                {`https://image-hosting.maulanazulkifar.com/${item.key}`}
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                size="small"
-                                onClick={() =>
-                                    navigator.clipboard.writeText(
-                                        `https://image-hosting.maulanazulkifar.com/${item.key}`
-                                    )
-                                }
-                                sx={{ mt: 1 }}
-                            >
-                                Copy URL
-                            </Button>
+                        <CardContent sx={{ p: 3 }}>
+                            <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center',
+                                background: '#ffebee',
+                                borderRadius: '8px',
+                                p: 1,
+                                mb: 2
+                            }}>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                        wordWrap: "break-word",
+                                        flex: 1,
+                                        mr: 1,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap"
+                                    }}
+                                >
+                                    {`https://assets.mediakita.cloud/${item.key}`}
+                                </Typography>
+                                <IconButton
+                                    size="small"
+                                    onClick={() =>
+                                        navigator.clipboard.writeText(
+                                            `https://assets.mediakita.cloud/${item.key}`
+                                        )
+                                    }
+                                >
+                                    <ContentCopyIcon fontSize="small" />
+                                </IconButton>
+                            </Box>
                         </CardContent>
-                    </Card>
+                    </StyledCard>
                 ))}
             </Box>
 
-            <Box display="flex" justifyContent="center" sx={{ mt: 3 }}>
+            <Box display="flex" justifyContent="center" sx={{ mt: 5 }}>
                 <Pagination
                     count={Math.ceil(images.length / imagesPerPage)}
                     page={page}
                     onChange={handleChangePage}
                     variant="outlined"
-                    color="primary"
+                    sx={{
+                        '& .MuiPaginationItem-root': {
+                            borderRadius: '12px',
+                        }
+                    }}
+                    color="error"
                 />
             </Box>
 
-            <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
+            <Snackbar 
+                open={snackbar.open} 
+                autoHideDuration={3000} 
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose} 
+                    severity={snackbar.severity} 
+                    sx={{ 
+                        width: "100%",
+                        borderRadius: '12px'
+                    }}
+                    variant="filled"
+                >
                     {snackbar.message}
                 </Alert>
             </Snackbar>
